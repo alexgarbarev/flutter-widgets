@@ -2274,6 +2274,12 @@ class VisualContainerHelper {
   }
 
   void _updateRowHeights(DataGridConfiguration dataGridConfiguration) {
+    if (_shouldUpdateAllRowsHeight()) {
+      // update all rows height when data source is configured that way
+      _updateAllRowsHeight();
+      return;
+    }
+
     // Sets datagrid row height
     rowHeights.setRange(0, rowCount - 1, dataGridConfiguration.rowHeight);
 
@@ -2631,4 +2637,42 @@ class Range {
 
   /// Checks whether the range is empty or not.
   bool isEmpty() => start < 0 || end < 0;
+}
+
+/// Helper extension for easier maintenance with upstream changes
+extension VisualContainerHelperTotalHeight on VisualContainerHelper {
+  bool _shouldUpdateAllRowsHeight() {
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
+    final bool supportDynamicRowHeight =
+        dataGridConfiguration.onQueryRowHeight != null;
+    return supportDynamicRowHeight &&
+        dataGridConfiguration.source.shouldRecalculateRowsTotalHeight();
+  }
+
+  /// This method used to re-calculate height for all rows, so
+  /// scrolling can work smooth without jumping or synced to another scrolling
+  /// correctly.Should be called once data is changed
+  void _updateAllRowsHeight() {
+    final DataGridConfiguration dataGridConfiguration = dataGridStateDetails();
+
+    final int? footerIndex = dataGridConfiguration.footer != null
+        ? grid_helper.getFooterViewRowIndex(dataGridConfiguration)
+        : null;
+    final int headerIndex = grid_helper.getHeaderIndex(dataGridConfiguration);
+
+    for (int i = 0; i < rowCount; i++) {
+      final double height = rowHeights[i];
+      double? newHeight;
+      if (i <= headerIndex) {
+        newHeight = dataGridConfiguration.headerRowHeight;
+      } else if (footerIndex != null && i == footerIndex) {
+        newHeight = dataGridConfiguration.footerHeight;
+      } else {
+        newHeight = rowGenerator.queryRowHeight(i, height);
+      }
+      if (newHeight != null && newHeight != height) {
+        rowHeights[i] = newHeight;
+      }
+    }
+  }
 }

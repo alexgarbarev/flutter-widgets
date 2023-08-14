@@ -3756,6 +3756,19 @@ abstract class DataGridSource extends DataGridSourceChangeNotifier
     return false;
   }
 
+  /// Called whenever you call [notifyListeners] or [notifyDataSourceListeners]
+  /// in the DataGridSource class. If you want to recalculate all rows height
+  /// return true.
+  ///
+  /// This can be used when your cells height is dynamic and you want whole
+  /// scrolling extent to be calculated proactively.
+  /// This can be useful when you want to sync it with another scrollview or doing
+  /// another logic that depends on total scroll extent, but adds performance
+  /// drawback, as calculates height for each row every time data is changed
+  bool shouldRecalculateRowsTotalHeight() {
+    return false;
+  }
+
   /// The collection of [SortColumnDetails] objects to sort the columns in
   /// [SfDataGrid].
   ///
