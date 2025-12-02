@@ -45,80 +45,70 @@ class CellStyle implements Style {
   String _backColor = '';
 
   @override
-
   /// Gets/sets back color.
   String get backColor => _backColor;
 
   @override
   set backColor(String value) {
     _backColor = value;
-    _backColorRgb =
-        Color(int.parse(_backColor.substring(1, 7), radix: 16) + 0xFF000000);
+    _backColorRgb = Color(
+      int.parse(_backColor.substring(1, 7), radix: 16) + 0xFF000000,
+    );
   }
 
   /// Gets/sets borders.
   late BordersCollection _borders;
 
   @override
-
   /// Gets/sets font name.
   late String fontName;
 
   @override
-
   /// Gets/sets font size.
   late double fontSize;
 
   String _fontColor = '';
   @override
-
   /// Gets/sets font color.
   String get fontColor => _fontColor;
 
   @override
   set fontColor(String value) {
     _fontColor = value;
-    _fontColorRgb =
-        Color(int.parse(_fontColor.substring(1, 7), radix: 16) + 0xFF000000);
+    _fontColorRgb = Color(
+      int.parse(_fontColor.substring(1, 7), radix: 16) + 0xFF000000,
+    );
   }
 
   @override
-
   /// Gets/sets font italic.
   late bool italic;
 
   @override
-
   /// Gets/sets font bold.
   late bool bold;
 
   @override
-
   /// Gets/sets horizontal alignment.
   late HAlignType hAlign;
 
   @override
-
   /// Gets/sets cell indent.
   late int indent;
 
   @override
-
   /// Gets/sets cell rotation.
   late int rotation;
 
   @override
-
   /// Gets/sets vertical alignment.
   late VAlignType vAlign;
 
   @override
-
   /// Gets/sets font underline.
   late bool underline;
 
   @override
-
   /// Gets/sets cell wraptext.
   late bool wrapText;
 
@@ -134,19 +124,16 @@ class CellStyle implements Style {
   int builtinId = 0;
 
   @override
-
   /// Gets/Sets cell Lock
   late bool locked;
 
   @override
-
   /// Sets borders.
   Borders get borders {
     return _borders;
   }
 
   @override
-
   /// Sets borders.
   set borders(Borders value) {
     _borders = value as BordersCollection;
@@ -165,14 +152,12 @@ class CellStyle implements Style {
   }
 
   @override
-
   /// Returns or sets the format code for the object. Read/write String.
   String? get numberFormat {
     return numberFormatObject.formatString;
   }
 
   @override
-
   /// Sets the number format.
   set numberFormat(String? value) {
     numberFormatIndex = book.innerFormats.findOrCreateFormat(value);
@@ -188,27 +173,32 @@ class CellStyle implements Style {
   Color _fontColorRgb = const Color.fromARGB(255, 0, 0, 0);
 
   @override
-
   /// Gets/sets back color Rgb.
   Color get backColorRgb => _backColorRgb;
 
   @override
   set backColorRgb(Color value) {
     _backColorRgb = value;
-    if (_backColorRgb.value.toRadixString(16).toUpperCase() != 'FFFFFFFF') {
-      _backColor = _backColorRgb.value.toRadixString(16).toUpperCase();
+    if (rgbValue(_backColorRgb).toRadixString(16).toUpperCase() != 'FFFFFFFF') {
+      _backColor = rgbValue(_backColorRgb).toRadixString(16).toUpperCase();
     }
   }
 
   @override
-
   /// Gets/sets font color Rgb.
   Color get fontColorRgb => _fontColorRgb;
 
   @override
   set fontColorRgb(Color value) {
     _fontColorRgb = value;
-    _fontColor = _fontColorRgb.value.toRadixString(16).toUpperCase();
+    _fontColor = rgbValue(_fontColorRgb).toRadixString(16).toUpperCase();
+  }
+
+  int rgbValue(Color color) {
+    return ((color.a * 255).toInt() << 24) |
+        ((color.r * 255).toInt() << 16) |
+        ((color.g * 255).toInt() << 8) |
+        (color.b * 255).toInt();
   }
 
   /// clone method of cell style
@@ -270,27 +260,27 @@ class CellStyle implements Style {
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => Object.hash(
-        name,
-        backColor,
-        fontName,
-        fontSize,
-        fontColor,
-        italic,
-        bold,
-        underline,
-        wrapText,
-        hAlign,
-        vAlign,
-        indent,
-        rotation,
-        index,
-        builtinId,
-        numberFormat,
-        numberFormatIndex,
-        isGlobalStyle,
-        locked,
-        borders,
-      );
+    name,
+    backColor,
+    fontName,
+    fontSize,
+    fontColor,
+    italic,
+    bold,
+    underline,
+    wrapText,
+    hAlign,
+    vAlign,
+    indent,
+    rotation,
+    index,
+    builtinId,
+    numberFormat,
+    numberFormatIndex,
+    isGlobalStyle,
+    locked,
+    borders,
+  );
 
   /// clear the borders
   void clear() {

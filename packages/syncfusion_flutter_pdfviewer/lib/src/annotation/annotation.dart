@@ -6,12 +6,17 @@ import 'annotation_view.dart';
 import 'text_markup.dart';
 
 /// Callback definition for annotation property change.
-typedef AnnotationPropertyChangedCallback = void Function(Annotation annotation,
-    String propertyName, Object oldValue, Object newValue);
+typedef AnnotationPropertyChangedCallback =
+    void Function(
+      Annotation annotation,
+      String propertyName,
+      Object oldValue,
+      Object newValue,
+    );
 
 /// Callback definition for annotation property change.
-typedef AnnotationPropertyChangingCallback = bool Function(
-    Annotation annotation, String propertyName);
+typedef AnnotationPropertyChangingCallback =
+    bool Function(Annotation annotation, String propertyName);
 
 /// Represents a PDF annotation.
 abstract class Annotation extends ChangeNotifier {
@@ -95,9 +100,10 @@ extension AnnotationExtension on Annotation {
   Rect get boundingBox => _boundingBox;
 
   /// Returns the [Rect] bounds of the [Annotation].
-  Rect get uiBounds => isSelected
-      ? _intermediateBounds.inflate(selectionBorderMargin)
-      : _boundingBox.inflate(selectionBorderMargin);
+  Rect get uiBounds =>
+      isSelected
+          ? _intermediateBounds.inflate(selectionBorderMargin)
+          : _boundingBox.inflate(selectionBorderMargin);
 
   /// Return the global bounds of the [Annotation].
   Rect get globalRect => _globalRect;
@@ -210,8 +216,10 @@ extension AnnotationExtension on Annotation {
           pdfTextMarkupAnnotation.boundsCollection.addAll(boundsCollection);
         }
       } else if (annotation is StickyNoteAnnotation) {
-        final PdfPopupAnnotation pdfPopupAnnotation =
-            PdfPopupAnnotation(annotation._boundingBox, annotation.text);
+        final PdfPopupAnnotation pdfPopupAnnotation = PdfPopupAnnotation(
+          annotation._boundingBox,
+          annotation.text,
+        );
         pdfPopupAnnotation.icon = annotation.icon.pdfPopupIcon;
         if (annotation.author != null && annotation.author!.isNotEmpty) {
           pdfPopupAnnotation.author = annotation.author!;
@@ -248,7 +256,7 @@ extension AnnotationExtension on Annotation {
       } else {
         pdfAnnotation.annotationFlags = <PdfAnnotationFlags>[
           PdfAnnotationFlags.print,
-          PdfAnnotationFlags.locked
+          PdfAnnotationFlags.locked,
         ];
       }
     } else {

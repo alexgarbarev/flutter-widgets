@@ -11,11 +11,12 @@ import 'annotation_view.dart';
 /// Represents the sticky note annotation in the page.
 class StickyNoteAnnotation extends Annotation {
   /// Initializes a new instance of [StickyNoteAnnotation] class.
-  StickyNoteAnnotation(
-      {required super.pageNumber,
-      required String text,
-      required Offset position,
-      required PdfStickyNoteIcon icon}) {
+  StickyNoteAnnotation({
+    required super.pageNumber,
+    required String text,
+    required Offset position,
+    required PdfStickyNoteIcon icon,
+  }) {
     _text = text;
     _icon = icon;
     setBounds(_getDefualtStickyNoteSize(position));
@@ -121,33 +122,33 @@ extension StickyNoteAnnotationExtension on StickyNoteAnnotation {
 class StickyNoteAnnotationView extends InteractiveGraphicsView
     with AnnotationView {
   /// Creates a [StickyNoteAnnotationView].
-  StickyNoteAnnotationView(
-      {Key? key,
-      required this.annotation,
-      this.onAnnotationMoved,
-      this.onAnnotationMoving,
-      this.onTap,
-      this.onDoubleTap,
-      bool isSelected = false,
-      bool canEdit = true,
-      Color selectorColor = defaultSelectorColor,
-      double selectorStorkeWidth = 1,
-      double heightPercentage = 1})
-      : super(
-          key: key,
-          color: annotation.color,
-          strokeWidth: 1,
-          opacity: annotation.opacity,
-          isSelected: isSelected,
-          selectorColor: selectorColor,
-          canMove: canEdit,
-          selectorStorkeWidth: selectorStorkeWidth,
-        ) {
-    _heightPercentage = heightPercentage;
+  StickyNoteAnnotationView({
+    Key? key,
+    required this.annotation,
+    this.onAnnotationMoved,
+    this.onAnnotationMoving,
+    this.onTap,
+    this.onDoubleTap,
+    bool isSelected = false,
+    bool canEdit = true,
+    Color selectorColor = defaultSelectorColor,
+    double selectorStorkeWidth = 1,
+    double zoomLevel = 1,
+  }) : super(
+         key: key,
+         color: annotation.color,
+         strokeWidth: 1,
+         opacity: annotation.opacity,
+         isSelected: isSelected,
+         selectorColor: selectorColor,
+         canMove: canEdit,
+         selectorStorkeWidth: selectorStorkeWidth,
+       ) {
+    _zoomLevel = zoomLevel;
   }
 
-  /// Height percentage of the pdf page.
-  late final double _heightPercentage;
+  /// Zoom level of the pdf page.
+  late final double _zoomLevel;
 
   /// Called when the annotation is moved.
   final AnnotationMoveEndedCallback? onAnnotationMoved;
@@ -170,7 +171,7 @@ class StickyNoteAnnotationView extends InteractiveGraphicsView
       isSelected: isSelected,
       selectorColor: selectorColor,
       selectorStorkeWidth: selectorStorkeWidth,
-      heightPercentage: _heightPercentage,
+      zoomLevel: _zoomLevel,
       onAnnotationMoved: onAnnotationMoved,
       onAnnotationMoving: onAnnotationMoving,
       onDoubleTap: onDoubleTap,
@@ -179,11 +180,13 @@ class StickyNoteAnnotationView extends InteractiveGraphicsView
   }
 
   @override
-  void updateRenderObject(BuildContext context,
-      covariant RenderInteractiveGraphicsView renderObject) {
+  void updateRenderObject(
+    BuildContext context,
+    covariant RenderInteractiveGraphicsView renderObject,
+  ) {
     if (renderObject is RenderStickyNoteAnnotationView) {
       renderObject
-        ..heightPercentage = _heightPercentage
+        ..zoomLevel = _zoomLevel
         ..selectorStorkeWidth = selectorStorkeWidth
         ..onAnnotationMoved = onAnnotationMoved
         ..onAnnotationMoving = onAnnotationMoving
@@ -211,42 +214,44 @@ class RenderStickyNoteAnnotationView extends RenderInteractiveGraphicsView {
     this.onAnnotationMoving,
     VoidCallback? onTap,
     void Function()? onDoubleTap,
-    double heightPercentage = 1,
-  })  : _onDoubleTap = onDoubleTap,
-        super(
-          strokeColor: color,
-          opacity: opacity,
-          strokeWidth: 1,
-          isSelected: isSelected,
-          selectorColor: selectorColor,
-          selectorStorkeWidth: selectorStorkeWidth,
-        ) {
+    double zoomLevel = 1,
+  }) : _onDoubleTap = onDoubleTap,
+       super(
+         strokeColor: color,
+         opacity: opacity,
+         strokeWidth: 1,
+         isSelected: isSelected,
+         selectorColor: selectorColor,
+         selectorStorkeWidth: selectorStorkeWidth,
+       ) {
     _onTap = onTap;
-    _heightPercentage = heightPercentage;
+    _zoomLevel = zoomLevel;
     _selectorStorkeWidth = selectorStorkeWidth;
 
-    _doubleTapGestureRecognizer = DoubleTapGestureRecognizer()
-      ..onDoubleTap = _onDoubleTap
-      ..gestureSettings = const DeviceGestureSettings(touchSlop: 0.0);
-    super.tapGestureRecognizer.gestureSettings =
-        const DeviceGestureSettings(touchSlop: 0.0);
+    _doubleTapGestureRecognizer =
+        DoubleTapGestureRecognizer()
+          ..onDoubleTap = _onDoubleTap
+          ..gestureSettings = const DeviceGestureSettings(touchSlop: 0.0);
+    super.tapGestureRecognizer.gestureSettings = const DeviceGestureSettings(
+      touchSlop: 0.0,
+    );
     _strokePath = Path();
     _fillPath = Path();
   }
 
-  late double _heightPercentage;
+  late double _zoomLevel;
   late DoubleTapGestureRecognizer _doubleTapGestureRecognizer;
   late Path _fillPath;
   late Path _strokePath;
   late double _selectorStorkeWidth;
 
-  /// The height percentage.
-  double get heightPercentage => _heightPercentage;
-  set heightPercentage(double value) {
-    if (_heightPercentage == value) {
+  /// The zoom level
+  double get zoomLevel => _zoomLevel;
+  set zoomLevel(double value) {
+    if (_zoomLevel == value) {
       return;
     }
-    _heightPercentage = value;
+    _zoomLevel = value;
     markNeedsPaint();
   }
 
@@ -293,9 +298,10 @@ class RenderStickyNoteAnnotationView extends RenderInteractiveGraphicsView {
   Rect _getPaintRect(Rect rect, Offset offset) {
     final Rect localRect = rect.translate(-_bounds.left, -_bounds.top);
     final Offset globalOffset = Offset(
-        offset.dx + localRect.left / heightPercentage,
-        offset.dy + localRect.top / heightPercentage);
-    return globalOffset & (localRect.size / heightPercentage);
+      offset.dx + (localRect.left / zoomLevel),
+      offset.dy + (localRect.top / zoomLevel),
+    );
+    return globalOffset & (localRect.size / zoomLevel);
   }
 
   void _applyRotationTransform(Canvas canvas, int rotation, Offset offset) {
@@ -309,19 +315,21 @@ class RenderStickyNoteAnnotationView extends RenderInteractiveGraphicsView {
 
   void _drawStickyNoteIcon(Canvas canvas, Offset offset) {
     final Paint fillPaint = Paint();
-    fillPaint.color = color.withOpacity(opacity);
+    fillPaint.color = color.withValues(alpha: opacity);
     fillPaint.style = PaintingStyle.fill;
 
-    final Paint strokePaint = Paint()
-      ..color = Colors.black.withOpacity(opacity)
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
+    final Paint strokePaint =
+        Paint()
+          ..color = Colors.black.withValues(alpha: opacity)
+          ..strokeWidth = 1.5
+          ..style = PaintingStyle.stroke;
 
     final Rect paintRect = _getPaintRect(
-        stickyNoteAnnotation.isSelected
-            ? stickyNoteAnnotation.intermediateBounds
-            : stickyNoteAnnotation.boundingBox,
-        offset);
+      stickyNoteAnnotation.isSelected
+          ? stickyNoteAnnotation.intermediateBounds
+          : stickyNoteAnnotation.boundingBox,
+      offset,
+    );
     canvas.save();
 
     _fillPath.reset();
@@ -329,168 +337,182 @@ class RenderStickyNoteAnnotationView extends RenderInteractiveGraphicsView {
 
     switch (stickyNoteAnnotation.icon) {
       case PdfStickyNoteIcon.comment:
-        _fillPath = Path()
-          ..moveTo(0, 3)
-          ..cubicTo(0, 0.89543, 0.89543, 0, 3, 0)
-          ..lineTo(23, 0)
-          ..cubicTo(24.1046, 0, 25, 0.89543, 25, 3)
-          ..lineTo(25, 24)
-          ..lineTo(20.7868, 19.7499)
-          ..cubicTo(20.4113, 19.371, 19.8999, 19.1579, 19.3665, 19.1579)
-          ..lineTo(3, 19.1579)
-          ..cubicTo(0.89543, 19.1579, 0, 18.2625, 0, 17.1579)
-          ..lineTo(0, 3)
-          ..close();
-        _strokePath = Path()
-          ..moveTo(5, 7)
-          ..lineTo(21, 7)
-          ..moveTo(5, 12)
-          ..lineTo(21, 12)
-          ..moveTo(25, 24)
-          ..lineTo(25, 3)
-          ..cubicTo(25, 0.89543, 24.1046, 0, 23, 0)
-          ..lineTo(3, 0)
-          ..cubicTo(0.89543, 0, 0, 0.89543, 0, 3)
-          ..lineTo(0, 17.1579)
-          ..cubicTo(0, 18.2625, 0.89543, 19.1579, 3, 19.1579)
-          ..lineTo(19.3665, 19.1579)
-          ..cubicTo(19.8999, 19.1579, 20.4113, 19.371, 20.7868, 19.7499)
-          ..lineTo(25, 24)
-          ..close();
+        _fillPath =
+            Path()
+              ..moveTo(0, 3)
+              ..cubicTo(0, 0.89543, 0.89543, 0, 3, 0)
+              ..lineTo(23, 0)
+              ..cubicTo(24.1046, 0, 25, 0.89543, 25, 3)
+              ..lineTo(25, 24)
+              ..lineTo(20.7868, 19.7499)
+              ..cubicTo(20.4113, 19.371, 19.8999, 19.1579, 19.3665, 19.1579)
+              ..lineTo(3, 19.1579)
+              ..cubicTo(0.89543, 19.1579, 0, 18.2625, 0, 17.1579)
+              ..lineTo(0, 3)
+              ..close();
+        _strokePath =
+            Path()
+              ..moveTo(5, 7)
+              ..lineTo(21, 7)
+              ..moveTo(5, 12)
+              ..lineTo(21, 12)
+              ..moveTo(25, 24)
+              ..lineTo(25, 3)
+              ..cubicTo(25, 0.89543, 24.1046, 0, 23, 0)
+              ..lineTo(3, 0)
+              ..cubicTo(0.89543, 0, 0, 0.89543, 0, 3)
+              ..lineTo(0, 17.1579)
+              ..cubicTo(0, 18.2625, 0.89543, 19.1579, 3, 19.1579)
+              ..lineTo(19.3665, 19.1579)
+              ..cubicTo(19.8999, 19.1579, 20.4113, 19.371, 20.7868, 19.7499)
+              ..lineTo(25, 24)
+              ..close();
         break;
       case PdfStickyNoteIcon.note:
-        _fillPath = Path()
-          ..moveTo(0, 23)
-          ..lineTo(0, 0)
-          ..lineTo(23, 0)
-          ..lineTo(23, 13)
-          ..lineTo(13, 23)
-          ..lineTo(0, 23)
-          ..close();
-        _strokePath = Path()
-          ..moveTo(13, 23)
-          ..lineTo(0, 23)
-          ..lineTo(0, 0)
-          ..lineTo(23, 0)
-          ..lineTo(23, 13)
-          ..moveTo(13, 23)
-          ..lineTo(23, 13)
-          ..moveTo(13, 23)
-          ..lineTo(13, 13)
-          ..lineTo(23, 13);
+        _fillPath =
+            Path()
+              ..moveTo(0, 23)
+              ..lineTo(0, 0)
+              ..lineTo(23, 0)
+              ..lineTo(23, 13)
+              ..lineTo(13, 23)
+              ..lineTo(0, 23)
+              ..close();
+        _strokePath =
+            Path()
+              ..moveTo(13, 23)
+              ..lineTo(0, 23)
+              ..lineTo(0, 0)
+              ..lineTo(23, 0)
+              ..lineTo(23, 13)
+              ..moveTo(13, 23)
+              ..lineTo(23, 13)
+              ..moveTo(13, 23)
+              ..lineTo(13, 13)
+              ..lineTo(23, 13);
         break;
       case PdfStickyNoteIcon.help:
-        _fillPath = Path()
-          ..moveTo(23, 12)
-          ..cubicTo(23, 18.0751, 18.0751, 23, 12, 23)
-          ..cubicTo(5.92487, 23, 0, 18.0751, 0, 12)
-          ..cubicTo(0, 5.92487, 5.92487, 0, 12, 0)
-          ..cubicTo(18.0751, 0, 23, 5.92487, 23, 12)
-          ..close();
-        _strokePath = Path()
-          ..moveTo(8.5, 10)
-          ..cubicTo(8.5, 8.93913, 8.86875, 7.92172, 9.52513, 7.17157)
-          ..cubicTo(10.1815, 6.42143, 11.0717, 6, 12, 6)
-          ..cubicTo(12.9283, 6, 13.8185, 6.42143, 14.4749, 7.17157)
-          ..cubicTo(15.1313, 7.92172, 15.5, 8.5, 15.5, 9.5)
-          ..cubicTo(15.5, 12.5, 12, 11.7106, 12, 14)
-          ..lineTo(12, 15)
-          ..moveTo(12, 19)
-          ..lineTo(12, 17)
-          ..moveTo(23, 12)
-          ..cubicTo(23, 18.0751, 18.0751, 23, 12, 23)
-          ..cubicTo(5.92487, 23, 0, 18.0751, 0, 12)
-          ..cubicTo(0, 5.92487, 5.92487, 0, 12, 0)
-          ..cubicTo(18.0751, 0, 23, 5.92487, 23, 12)
-          ..close();
+        _fillPath =
+            Path()
+              ..moveTo(23, 12)
+              ..cubicTo(23, 18.0751, 18.0751, 23, 12, 23)
+              ..cubicTo(5.92487, 23, 0, 18.0751, 0, 12)
+              ..cubicTo(0, 5.92487, 5.92487, 0, 12, 0)
+              ..cubicTo(18.0751, 0, 23, 5.92487, 23, 12)
+              ..close();
+        _strokePath =
+            Path()
+              ..moveTo(8.5, 10)
+              ..cubicTo(8.5, 8.93913, 8.86875, 7.92172, 9.52513, 7.17157)
+              ..cubicTo(10.1815, 6.42143, 11.0717, 6, 12, 6)
+              ..cubicTo(12.9283, 6, 13.8185, 6.42143, 14.4749, 7.17157)
+              ..cubicTo(15.1313, 7.92172, 15.5, 8.5, 15.5, 9.5)
+              ..cubicTo(15.5, 12.5, 12, 11.7106, 12, 14)
+              ..lineTo(12, 15)
+              ..moveTo(12, 19)
+              ..lineTo(12, 17)
+              ..moveTo(23, 12)
+              ..cubicTo(23, 18.0751, 18.0751, 23, 12, 23)
+              ..cubicTo(5.92487, 23, 0, 18.0751, 0, 12)
+              ..cubicTo(0, 5.92487, 5.92487, 0, 12, 0)
+              ..cubicTo(18.0751, 0, 23, 5.92487, 23, 12)
+              ..close();
         break;
       case PdfStickyNoteIcon.insert:
-        _fillPath = Path()
-          ..moveTo(0, 40)
-          ..lineTo(20, 0)
-          ..lineTo(40, 40)
-          ..close();
-        _strokePath = Path()
-          ..moveTo(0, 40)
-          ..lineTo(20, 0)
-          ..lineTo(40, 40)
-          ..close();
+        _fillPath =
+            Path()
+              ..moveTo(0, 40)
+              ..lineTo(20, 0)
+              ..lineTo(40, 40)
+              ..close();
+        _strokePath =
+            Path()
+              ..moveTo(0, 40)
+              ..lineTo(20, 0)
+              ..lineTo(40, 40)
+              ..close();
         break;
       case PdfStickyNoteIcon.key:
-        _fillPath = _strokePath = Path()
-          ..moveTo(7, 0)
-          ..cubicTo(3.68629, 0, 0, 3.68629, 0, 7)
-          ..cubicTo(0, 9.22085, 2.2066, 11.1599, 4, 12.1973)
-          ..lineTo(4, 21)
-          ..lineTo(7, 22.5)
-          ..lineTo(9, 21)
-          ..lineTo(8.5, 19.5)
-          ..lineTo(9.5, 18.5)
-          ..lineTo(8.5, 16.5)
-          ..lineTo(10, 15)
-          ..lineTo(10, 12.1973)
-          ..cubicTo(11.7934, 11.1599, 13, 9.22085, 13, 7)
-          ..cubicTo(13, 3.68629, 10.3137, 0, 7, 0)
-          ..close();
+        _fillPath =
+            _strokePath =
+                Path()
+                  ..moveTo(7, 0)
+                  ..cubicTo(3.68629, 0, 0, 3.68629, 0, 7)
+                  ..cubicTo(0, 9.22085, 2.2066, 11.1599, 4, 12.1973)
+                  ..lineTo(4, 21)
+                  ..lineTo(7, 22.5)
+                  ..lineTo(9, 21)
+                  ..lineTo(8.5, 19.5)
+                  ..lineTo(9.5, 18.5)
+                  ..lineTo(8.5, 16.5)
+                  ..lineTo(10, 15)
+                  ..lineTo(10, 12.1973)
+                  ..cubicTo(11.7934, 11.1599, 13, 9.22085, 13, 7)
+                  ..cubicTo(13, 3.68629, 10.3137, 0, 7, 0)
+                  ..close();
         break;
       case PdfStickyNoteIcon.newParagraph:
-        _fillPath = Path()
-          ..moveTo(22, 14)
-          ..lineTo(0, 14)
-          ..lineTo(12, 0)
-          ..lineTo(22, 14)
-          ..close();
-        _strokePath = Path()
-          ..moveTo(15, 24)
-          ..lineTo(15, 21)
-          ..moveTo(15, 21)
-          ..lineTo(15, 18)
-          ..lineTo(17.5, 18)
-          ..cubicTo(18.3284, 18, 19, 18.6716, 19, 19.5)
-          ..cubicTo(19, 20.3284, 18.3284, 21, 17.5, 21)
-          ..lineTo(15, 21)
-          ..moveTo(5, 24)
-          ..lineTo(5, 18)
-          ..moveTo(5, 18)
-          ..lineTo(5, 17)
-          ..moveTo(5, 18)
-          ..lineTo(10, 23)
-          ..moveTo(10, 23)
-          ..lineTo(10, 17)
-          ..moveTo(10, 23)
-          ..lineTo(10, 24)
-          ..moveTo(0, 14)
-          ..lineTo(22, 14)
-          ..lineTo(12, 0)
-          ..lineTo(0, 14)
-          ..close();
+        _fillPath =
+            Path()
+              ..moveTo(22, 14)
+              ..lineTo(0, 14)
+              ..lineTo(12, 0)
+              ..lineTo(22, 14)
+              ..close();
+        _strokePath =
+            Path()
+              ..moveTo(15, 24)
+              ..lineTo(15, 21)
+              ..moveTo(15, 21)
+              ..lineTo(15, 18)
+              ..lineTo(17.5, 18)
+              ..cubicTo(18.3284, 18, 19, 18.6716, 19, 19.5)
+              ..cubicTo(19, 20.3284, 18.3284, 21, 17.5, 21)
+              ..lineTo(15, 21)
+              ..moveTo(5, 24)
+              ..lineTo(5, 18)
+              ..moveTo(5, 18)
+              ..lineTo(5, 17)
+              ..moveTo(5, 18)
+              ..lineTo(10, 23)
+              ..moveTo(10, 23)
+              ..lineTo(10, 17)
+              ..moveTo(10, 23)
+              ..lineTo(10, 24)
+              ..moveTo(0, 14)
+              ..lineTo(22, 14)
+              ..lineTo(12, 0)
+              ..lineTo(0, 14)
+              ..close();
         break;
       case PdfStickyNoteIcon.paragraph:
-        _fillPath = Path()
-          ..moveTo(11, 14)
-          ..lineTo(7.5, 14)
-          ..cubicTo(3.91015, 14, 0, 11.0899, 0, 7.5)
-          ..cubicTo(0, 3.91015, 3.91015, 0, 7.5, 0)
-          ..lineTo(11, 0)
-          ..lineTo(11, 14)
-          ..close();
-        _strokePath = Path()
-          ..moveTo(11, 14)
-          ..lineTo(7.5, 14)
-          ..cubicTo(3.91015, 14, 0, 11.0899, 0, 7.5)
-          ..cubicTo(0, 3.91015, 3.91015, 0, 7.5, 0)
-          ..lineTo(11, 0)
-          ..moveTo(11, 14)
-          ..lineTo(11, 24)
-          ..moveTo(11, 14)
-          ..lineTo(11, 0)
-          ..moveTo(24, 0)
-          ..lineTo(17, 0)
-          ..moveTo(17, 0)
-          ..lineTo(17, 24)
-          ..moveTo(17, 0)
-          ..lineTo(11, 0)
-          ..close();
+        _fillPath =
+            Path()
+              ..moveTo(11, 14)
+              ..lineTo(7.5, 14)
+              ..cubicTo(3.91015, 14, 0, 11.0899, 0, 7.5)
+              ..cubicTo(0, 3.91015, 3.91015, 0, 7.5, 0)
+              ..lineTo(11, 0)
+              ..lineTo(11, 14)
+              ..close();
+        _strokePath =
+            Path()
+              ..moveTo(11, 14)
+              ..lineTo(7.5, 14)
+              ..cubicTo(3.91015, 14, 0, 11.0899, 0, 7.5)
+              ..cubicTo(0, 3.91015, 3.91015, 0, 7.5, 0)
+              ..lineTo(11, 0)
+              ..moveTo(11, 14)
+              ..lineTo(11, 24)
+              ..moveTo(11, 14)
+              ..lineTo(11, 0)
+              ..moveTo(24, 0)
+              ..lineTo(17, 0)
+              ..moveTo(17, 0)
+              ..lineTo(17, 24)
+              ..moveTo(17, 0)
+              ..lineTo(11, 0)
+              ..close();
         break;
     }
 
@@ -500,7 +522,9 @@ class RenderStickyNoteAnnotationView extends RenderInteractiveGraphicsView {
     final Rect iconRect = fillRect.expandToInclude(strokeRect);
 
     canvas.scale(
-        paintRect.width / iconRect.width, paintRect.height / iconRect.height);
+      paintRect.width / iconRect.width,
+      paintRect.height / iconRect.height,
+    );
 
     canvas.drawPath(_fillPath, fillPaint);
     canvas.drawPath(_strokePath, strokePaint);

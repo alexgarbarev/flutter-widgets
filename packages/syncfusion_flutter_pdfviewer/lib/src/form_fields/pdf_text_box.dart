@@ -36,17 +36,21 @@ class PdfTextFormField extends PdfFormField {
   }
 
   /// Gets the child items associated with this [PdfTextFormField].
-  List<PdfTextFormField>? get children => _children != null
-      ? List<PdfTextFormField>.unmodifiable(_children!)
-      : null;
+  List<PdfTextFormField>? get children =>
+      _children != null
+          ? List<PdfTextFormField>.unmodifiable(_children!)
+          : null;
 }
 
 /// Helper class for [PdfTextFormField].
 class PdfTextFormFieldHelper extends PdfFormFieldHelper {
   /// Initializes a new instance of the [PdfTextFormFieldHelper] class.
-  PdfTextFormFieldHelper(this.pdfTextField, int pageIndex,
-      {this.onValueChanged, this.onFocusChanged})
-      : super(pdfTextField, pageIndex) {
+  PdfTextFormFieldHelper(
+    this.pdfTextField,
+    int pageIndex, {
+    this.onValueChanged,
+    this.onFocusChanged,
+  }) : super(pdfTextField, pageIndex) {
     bounds = pdfTextField.bounds;
   }
 
@@ -96,13 +100,13 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
       onKeyEvent: (FocusNode focusNode, KeyEvent event) {
         final bool isControlOrMeta =
             HardwareKeyboard.instance.isControlPressed ||
-                HardwareKeyboard.instance.isMetaPressed;
+            HardwareKeyboard.instance.isMetaPressed;
         final bool isLogicalOrPhysicalZ =
             event.logicalKey == LogicalKeyboardKey.keyZ ||
-                event.physicalKey == PhysicalKeyboardKey.keyZ;
+            event.physicalKey == PhysicalKeyboardKey.keyZ;
         final bool isLogicalOrPhysicalY =
             event.logicalKey == LogicalKeyboardKey.keyY ||
-                event.physicalKey == PhysicalKeyboardKey.keyY;
+            event.physicalKey == PhysicalKeyboardKey.keyY;
 
         if (isControlOrMeta && isLogicalOrPhysicalZ) {
           if (event is KeyDownEvent) {
@@ -119,10 +123,10 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
         }
       },
     )..addListener(() {
-        if (!focusNode.hasFocus) {
-          invokeFocusChange(focusNode.hasFocus);
-        }
-      });
+      if (!focusNode.hasFocus) {
+        invokeFocusChange(focusNode.hasFocus);
+      }
+    });
   }
 
   /// Updates the text form field.
@@ -136,7 +140,8 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
       setTextBoxValue(newValue);
       if (onValueChanged != null) {
         onValueChanged!(
-            PdfFormFieldValueChangedDetails(textFormField, oldValue, newValue));
+          PdfFormFieldValueChangedDetails(textFormField, oldValue, newValue),
+        );
       }
       rebuild();
     }
@@ -167,8 +172,9 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
     if (textFormField._children != null &&
         textFormField._children!.isNotEmpty) {
       for (final PdfTextFormField item in textFormField._children!) {
-        final PdfFormFieldHelper childHelper =
-            PdfFormFieldHelper.getHelper(item);
+        final PdfFormFieldHelper childHelper = PdfFormFieldHelper.getHelper(
+          item,
+        );
         if (childHelper is PdfTextFormFieldHelper &&
             childHelper.textEditingController.text != text) {
           childHelper.textEditingController.text = text;
@@ -191,30 +197,35 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
         font: pdfTextField.font.name,
         fontSize: pdfTextField.font.size / heightPercentage,
         isPassword: pdfTextField.isPassword,
-        fillColor: pdfTextField.backColor.isEmpty
-            ? const Color.fromARGB(255, 221, 228, 255)
-            : Color.fromRGBO(
-                pdfTextField.backColor.r,
-                pdfTextField.backColor.g,
-                pdfTextField.backColor.b,
-                1,
-              ),
-        borderColor: pdfTextField.borderColor.isEmpty
-            ? Colors.transparent
-            : Color.fromRGBO(
-                pdfTextField.borderColor.r,
-                pdfTextField.borderColor.g,
-                pdfTextField.borderColor.b,
-                1,
-              ),
+        fillColor:
+            pdfTextField.backColor.isEmpty
+                ? pdfTextField.readOnly
+                    ? Colors.transparent
+                    : const Color.fromARGB(255, 221, 228, 255)
+                : Color.fromRGBO(
+                  pdfTextField.backColor.r,
+                  pdfTextField.backColor.g,
+                  pdfTextField.backColor.b,
+                  1,
+                ),
+        borderColor:
+            pdfTextField.borderColor.isEmpty
+                ? Colors.transparent
+                : Color.fromRGBO(
+                  pdfTextField.borderColor.r,
+                  pdfTextField.borderColor.g,
+                  pdfTextField.borderColor.b,
+                  1,
+                ),
         borderWidth: pdfTextField.borderWidth / heightPercentage,
         textAlign: pdfTextField.textAlignment.textAlign,
         multiline: pdfTextField.multiline,
         maxLength: pdfTextField.maxLength,
-        letterSpacing: pdfTextField.insertSpaces && pdfTextField.maxLength > 1
-            ? (pdfTextField.bounds.width / pdfTextField.maxLength - 1) /
-                heightPercentage
-            : null,
+        letterSpacing:
+            pdfTextField.insertSpaces && pdfTextField.maxLength > 1
+                ? (pdfTextField.bounds.width / pdfTextField.maxLength - 1) /
+                    heightPercentage
+                : null,
         onValueChanged: invokeValueChanged,
         onFocusChange: invokeFocusChange,
       ),
@@ -232,23 +243,24 @@ class PdfTextFormFieldHelper extends PdfFormFieldHelper {
 /// Customized text box.
 class PdfTextBox extends StatefulWidget {
   /// Creates a text form field widget.
-  const PdfTextBox(
-      {required this.textEditingController,
-      required this.focusNode,
-      this.readOnly = false,
-      required this.font,
-      required this.fontSize,
-      this.isPassword = false,
-      required this.fillColor,
-      this.multiline = false,
-      this.maxLength = 0,
-      this.letterSpacing,
-      this.onValueChanged,
-      this.onFocusChange,
-      required this.borderColor,
-      required this.borderWidth,
-      this.textAlign = TextAlign.left,
-      super.key});
+  const PdfTextBox({
+    required this.textEditingController,
+    required this.focusNode,
+    this.readOnly = false,
+    required this.font,
+    required this.fontSize,
+    this.isPassword = false,
+    required this.fillColor,
+    this.multiline = false,
+    this.maxLength = 0,
+    this.letterSpacing,
+    this.onValueChanged,
+    this.onFocusChange,
+    required this.borderColor,
+    required this.borderWidth,
+    this.textAlign = TextAlign.left,
+    super.key,
+  });
 
   /// Text form field text editing controller.
   final TextEditingController textEditingController;
@@ -317,11 +329,12 @@ class _PdfTextBoxState extends State<PdfTextBox> {
         cursorColor: Colors.black,
         obscureText: widget.isPassword,
         onChanged: widget.onValueChanged,
-        inputFormatters: widget.maxLength > 0
-            ? <TextInputFormatter>[
-                LengthLimitingTextInputFormatter(widget.maxLength),
-              ]
-            : null,
+        inputFormatters:
+            widget.maxLength > 0
+                ? <TextInputFormatter>[
+                  LengthLimitingTextInputFormatter(widget.maxLength),
+                ]
+                : null,
         keyboardType:
             widget.multiline ? TextInputType.multiline : TextInputType.text,
         scrollPhysics: widget.multiline ? const ClampingScrollPhysics() : null,
@@ -329,36 +342,43 @@ class _PdfTextBoxState extends State<PdfTextBox> {
         expands: widget.multiline,
         textAlignVertical: TextAlignVertical.top,
         textAlign: widget.textAlign,
-        style: widget.letterSpacing != null
-            ? TextStyle(
-                color: Colors.black,
-                fontFamily: 'RobotoMono',
-                package: 'syncfusion_flutter_pdfviewer',
-                fontSize: widget.fontSize,
-                letterSpacing: widget.letterSpacing! - widget.fontSize / 2,
-              )
-            : TextStyle(
-                color: Colors.black,
-                fontFamily: widget.font,
-                fontSize: widget.fontSize,
-              ),
+        style:
+            widget.letterSpacing != null
+                ? TextStyle(
+                  color: Colors.black,
+                  fontFamily: 'RobotoMono',
+                  package: 'syncfusion_flutter_pdfviewer',
+                  fontSize: widget.fontSize,
+                  letterSpacing: widget.letterSpacing! - widget.fontSize / 2,
+                )
+                : TextStyle(
+                  color: Colors.black,
+                  fontFamily: widget.font,
+                  fontSize: widget.fontSize,
+                ),
         decoration: InputDecoration(
           filled: true,
           fillColor: widget.fillColor,
-          contentPadding: widget.multiline
-              ? const EdgeInsets.all(3)
-              : widget.letterSpacing != null
+          hoverColor: widget.readOnly ? Colors.transparent : null,
+          contentPadding:
+              widget.multiline
+                  ? const EdgeInsets.all(3)
+                  : widget.letterSpacing != null
                   ? EdgeInsets.zero
                   : const EdgeInsets.symmetric(horizontal: 3),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.zero,
             borderSide: BorderSide(
-                color: widget.borderColor, width: widget.borderWidth),
+              color: widget.borderColor,
+              width: widget.borderWidth,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.zero,
             borderSide: BorderSide(
-                color: widget.borderColor, width: widget.borderWidth),
+              color: widget.borderColor,
+              width: widget.borderWidth,
+            ),
           ),
         ),
       ),

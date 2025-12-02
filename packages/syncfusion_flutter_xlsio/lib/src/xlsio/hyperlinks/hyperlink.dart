@@ -10,8 +10,12 @@ class Hyperlink {
   }
 
   /// Creates an instance of Hyperlink with parameters.
-  Hyperlink.add(this.address,
-      [this.screenTip, this.textToDisplay, HyperlinkType? type]) {
+  Hyperlink.add(
+    this.address, [
+    this.screenTip,
+    this.textToDisplay,
+    HyperlinkType? type,
+  ]) {
     if (type != null) {
       this.type = type;
     } else {
@@ -67,7 +71,7 @@ class Hyperlink {
 
   /// Returns or sets the text to be displayed for the specified hyperlink.
   /// The default value is the address of the hyperlink.
-  /// ///  ```dart
+  ///  ```dart
   /// final Workbook workbook = Workbook();
   /// final Worksheet sheet = workbook.worksheets[0];
   /// final Range range = sheet.getRangeByName('A1');

@@ -53,6 +53,7 @@ class CandleSeries<T, D> extends FinancialSeriesBase<T, D> {
     super.dataLabelSettings,
     super.initialIsVisible,
     super.enableTooltip = true,
+    super.enableTrackball = true,
     super.animationDuration,
     super.borderWidth,
     super.selectionBehavior,
@@ -102,7 +103,9 @@ class CandleSeries<T, D> extends FinancialSeriesBase<T, D> {
 
   @override
   void updateRenderObject(
-      BuildContext context, CandleSeriesRenderer<T, D> renderObject) {
+    BuildContext context,
+    CandleSeriesRenderer<T, D> renderObject,
+  ) {
     super.updateRenderObject(context, renderObject);
     renderObject.borderRadius = borderRadius;
   }
@@ -199,21 +202,32 @@ class CandleSeriesRenderer<T, D> extends FinancialSeriesRendererBase<T, D>
     late Color color;
     if (enableSolidCandles) {
       color = isHollow ? bullColor : bearColor;
-      final Color? segmentColor = pointColorMapper != null &&
-              pointColors[segment.currentSegmentIndex] != null
-          ? null
-          : color;
-      updateSegmentColor(segment, segmentColor, borderWidth,
-          fillColor: segmentColor, isLineType: true);
+      final Color? segmentColor =
+          pointColorMapper != null &&
+                  pointColors[segment.currentSegmentIndex] != null
+              ? null
+              : color;
+      updateSegmentColor(
+        segment,
+        segmentColor,
+        borderWidth,
+        fillColor: segmentColor,
+        isLineType: true,
+      );
     } else {
       color = isBull ? bullColor : bearColor;
-      final Color? segmentColor = pointColorMapper != null &&
-              pointColors[segment.currentSegmentIndex] != null
-          ? null
-          : color;
-      updateSegmentColor(segment, segmentColor, borderWidth,
-          fillColor: isHollow ? Colors.transparent : segmentColor,
-          isLineType: true);
+      final Color? segmentColor =
+          pointColorMapper != null &&
+                  pointColors[segment.currentSegmentIndex] != null
+              ? null
+              : color;
+      updateSegmentColor(
+        segment,
+        segmentColor,
+        borderWidth,
+        fillColor: isHollow ? Colors.transparent : segmentColor,
+        isLineType: true,
+      );
     }
     updateSegmentGradient(segment);
   }
@@ -249,7 +263,9 @@ class CandleSegment<T, D> extends ChartSegment {
 
   @override
   void copyOldSegmentValues(
-      double seriesAnimationFactor, double segmentAnimationFactor) {
+    double seriesAnimationFactor,
+    double segmentAnimationFactor,
+  ) {
     if (series.animationType == AnimationType.loading) {
       points.clear();
       _oldSegmentRect = null;
@@ -284,8 +300,11 @@ class CandleSegment<T, D> extends ChartSegment {
         }
       }
 
-      _oldSegmentRect =
-          RRect.lerp(_oldSegmentRect, segmentRect, segmentAnimationFactor);
+      _oldSegmentRect = RRect.lerp(
+        _oldSegmentRect,
+        segmentRect,
+        segmentAnimationFactor,
+      );
     } else {
       _oldPoints.clear();
       _oldSegmentRect = segmentRect;
@@ -353,12 +372,15 @@ class CandleSegment<T, D> extends ChartSegment {
 
       points.add(Offset(transformX(centerX, low), transformY(centerX, low)));
       points.add(
-          Offset(transformX(centerX, bottom), transformY(centerX, bottom)));
+        Offset(transformX(centerX, bottom), transformY(centerX, bottom)),
+      );
     }
 
     if (_oldPoints.isEmpty) {
-      final Offset point =
-          Offset(transformX(centerX, centerY), transformY(centerX, centerY));
+      final Offset point = Offset(
+        transformX(centerX, centerY),
+        transformY(centerX, centerY),
+      );
       _oldPoints.add(point);
       _oldPoints.add(point);
       _oldPoints.add(point);
@@ -404,9 +426,10 @@ class CandleSegment<T, D> extends ChartSegment {
       primaryPosition: primaryPos,
       secondaryPosition: secondaryPos,
       text: series.tooltipText(chartPoint),
-      header: series.parent!.tooltipBehavior!.shared
-          ? series.tooltipHeaderText(chartPoint)
-          : series.name,
+      header:
+          series.parent!.tooltipBehavior!.shared
+              ? series.tooltipHeaderText(chartPoint)
+              : series.name,
       data: series.dataSource![pointIndex],
       point: chartPoint,
       series: series.widget,
@@ -427,10 +450,14 @@ class CandleSegment<T, D> extends ChartSegment {
       Offset preferredPos;
       if (points.isNotEmpty) {
         preferredPos = Offset(
-            series.pointToPixelX(x, high), series.pointToPixelY(x, high));
+          series.pointToPixelX(x, high),
+          series.pointToPixelY(x, high),
+        );
       } else {
-        preferredPos =
-            Offset(series.pointToPixelX(x, top), series.pointToPixelX(x, top));
+        preferredPos = Offset(
+          series.pointToPixelX(x, top),
+          series.pointToPixelX(x, top),
+        );
       }
       return ChartTrackballInfo<T, D>(
         position: preferredPos,
@@ -444,9 +471,10 @@ class CandleSegment<T, D> extends ChartSegment {
         pointIndex: pointIndex,
         text: series.trackballText(chartPoint, series.name),
         header: series.tooltipHeaderText(chartPoint),
-        color: fillPaint.color == Colors.transparent
-            ? strokePaint.color
-            : fillPaint.color,
+        color:
+            fillPaint.color == Colors.transparent
+                ? strokePaint.color
+                : fillPaint.color,
       );
     }
     return null;
@@ -471,8 +499,11 @@ class CandleSegment<T, D> extends ChartSegment {
       return;
     }
 
-    final RRect? paintRRect =
-        RRect.lerp(_oldSegmentRect, segmentRect, animationFactor);
+    final RRect? paintRRect = RRect.lerp(
+      _oldSegmentRect,
+      segmentRect,
+      animationFactor,
+    );
     Paint paint = getFillPaint();
     if (paint.color != Colors.transparent && !_isSameValue) {
       canvas.drawRRect(paintRRect!, paint);

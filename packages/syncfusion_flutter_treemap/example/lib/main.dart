@@ -5,16 +5,13 @@ void main() {
   return runApp(const TreemapApp());
 }
 
-/// This widget will be the root of application.
+/// This widget will be the root of the application.
 class TreemapApp extends StatelessWidget {
   const TreemapApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Treemap Demo',
-      home: MyHomePage(),
-    );
+    return const MaterialApp(title: 'Treemap Demo', home: MyHomePage());
   }
 }
 
@@ -70,8 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
               return Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(
-                    '''Country          : ${tile.group}\nSocial media : ${tile.weight}M''',
-                    style: const TextStyle(color: Colors.black)),
+                  '''Country          : ${tile.group}\nSocial media : ${tile.weight}M''',
+                  style: const TextStyle(color: Colors.black),
+                ),
               );
             },
           ),

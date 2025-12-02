@@ -23,11 +23,7 @@ class SfChatTheme extends InheritedTheme {
   /// Applies the given theme [data] to [child].
   ///
   /// The [data] and [child] arguments must not be null.
-  const SfChatTheme({
-    super.key,
-    required this.data,
-    required super.child,
-  });
+  const SfChatTheme({required this.data, required super.child, super.key});
 
   /// Specifies the color and typography values for descendant Chat widgets.
   ///
@@ -97,8 +93,10 @@ class SfChatThemeData with Diagnosticable {
     this.actionButtonDisabledElevation = 0.0,
     this.actionButtonMouseCursor,
     this.actionButtonShape,
-    this.outgoingBubbleContentBackgroundColor,
-    this.incomingBubbleContentBackgroundColor,
+    this.outgoingAvatarBackgroundColor,
+    this.incomingAvatarBackgroundColor,
+    this.outgoingMessageBackgroundColor,
+    this.incomingMessageBackgroundColor,
     this.editorTextStyle,
     this.outgoingContentTextStyle,
     this.incomingContentTextStyle,
@@ -106,8 +104,13 @@ class SfChatThemeData with Diagnosticable {
     this.incomingPrimaryHeaderTextStyle,
     this.outgoingSecondaryHeaderTextStyle,
     this.incomingSecondaryHeaderTextStyle,
-    this.outgoingBubbleContentShape,
-    this.incomingBubbleContentShape,
+    this.suggestionItemTextStyle,
+    this.outgoingMessageShape,
+    this.incomingMessageShape,
+    this.suggestionBackgroundColor,
+    this.suggestionBackgroundShape,
+    this.suggestionItemBackgroundColor,
+    this.suggestionItemShape,
   });
 
   /// Returns a new instance of [SfChatThemeData.raw] for the given values.
@@ -128,8 +131,10 @@ class SfChatThemeData with Diagnosticable {
     double? actionButtonHighlightElevation,
     ShapeBorder? actionButtonShape,
     MouseCursor? actionButtonMouseCursor,
-    Color? outgoingBubbleContentBackgroundColor,
-    Color? incomingBubbleContentBackgroundColor,
+    Color? outgoingAvatarBackgroundColor,
+    Color? incomingAvatarBackgroundColor,
+    Color? outgoingMessageBackgroundColor,
+    Color? incomingMessageBackgroundColor,
     TextStyle? editorTextStyle,
     TextStyle? outgoingContentTextStyle,
     TextStyle? incomingContentTextStyle,
@@ -137,8 +142,13 @@ class SfChatThemeData with Diagnosticable {
     TextStyle? incomingPrimaryHeaderTextStyle,
     TextStyle? outgoingSecondaryHeaderTextStyle,
     TextStyle? incomingSecondaryHeaderTextStyle,
-    ShapeBorder? outgoingBubbleContentShape,
-    ShapeBorder? incomingBubbleContentShape,
+    WidgetStateProperty<TextStyle?>? suggestionItemTextStyle,
+    ShapeBorder? outgoingMessageShape,
+    ShapeBorder? incomingMessageShape,
+    Color? suggestionBackgroundColor,
+    ShapeBorder? suggestionBackgroundShape,
+    WidgetStateProperty<Color?>? suggestionItemBackgroundColor,
+    WidgetStateProperty<ShapeBorder?>? suggestionItemShape,
   }) {
     return SfChatThemeData(
       actionButtonForegroundColor: actionButtonForegroundColor,
@@ -155,10 +165,10 @@ class SfChatThemeData with Diagnosticable {
       actionButtonHighlightElevation: actionButtonHighlightElevation ?? 0.0,
       actionButtonShape: actionButtonShape,
       actionButtonMouseCursor: actionButtonMouseCursor,
-      outgoingBubbleContentBackgroundColor:
-          outgoingBubbleContentBackgroundColor,
-      incomingBubbleContentBackgroundColor:
-          incomingBubbleContentBackgroundColor,
+      outgoingAvatarBackgroundColor: outgoingAvatarBackgroundColor,
+      incomingAvatarBackgroundColor: incomingAvatarBackgroundColor,
+      outgoingMessageBackgroundColor: outgoingMessageBackgroundColor,
+      incomingMessageBackgroundColor: incomingMessageBackgroundColor,
       editorTextStyle: editorTextStyle,
       outgoingContentTextStyle: outgoingContentTextStyle,
       incomingContentTextStyle: incomingContentTextStyle,
@@ -166,8 +176,13 @@ class SfChatThemeData with Diagnosticable {
       incomingPrimaryHeaderTextStyle: incomingPrimaryHeaderTextStyle,
       outgoingSecondaryHeaderTextStyle: outgoingSecondaryHeaderTextStyle,
       incomingSecondaryHeaderTextStyle: incomingSecondaryHeaderTextStyle,
-      outgoingBubbleContentShape: outgoingBubbleContentShape,
-      incomingBubbleContentShape: incomingBubbleContentShape,
+      suggestionItemTextStyle: suggestionItemTextStyle,
+      outgoingMessageShape: outgoingMessageShape,
+      incomingMessageShape: incomingMessageShape,
+      suggestionBackgroundColor: suggestionBackgroundColor,
+      suggestionBackgroundShape: suggestionBackgroundShape,
+      suggestionItemBackgroundColor: suggestionItemBackgroundColor,
+      suggestionItemShape: suggestionItemShape,
     );
   }
 
@@ -399,6 +414,38 @@ class SfChatThemeData with Diagnosticable {
   /// ```
   final MouseCursor? actionButtonMouseCursor;
 
+  /// Background color of outgoing avatar.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         outgoingAvatarBackgroundColor: Colors.blueAccent,
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final Color? outgoingAvatarBackgroundColor;
+
+  /// Background color of incoming avatar.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         incomingAvatarBackgroundColor: Colors.blue,
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final Color? incomingAvatarBackgroundColor;
+
   /// Background color of outgoing message bubbles.
   ///
   /// ```dart
@@ -406,14 +453,14 @@ class SfChatThemeData with Diagnosticable {
   ///   return Scaffold(
   ///     body: SfChatTheme(
   ///       data: SfChatThemeData(
-  ///         outgoingBubbleContentBackgroundColor: Colors.blueAccent,
+  ///         outgoingMessagetBackgroundColor: Colors.blueAccent,
   ///       ),
   ///       child: SfChat(),
   ///     ),
   ///   );
   /// }
   /// ```
-  final Color? outgoingBubbleContentBackgroundColor;
+  final Color? outgoingMessageBackgroundColor;
 
   /// Background color of incoming message bubbles.
   ///
@@ -422,14 +469,14 @@ class SfChatThemeData with Diagnosticable {
   ///   return Scaffold(
   ///     body: SfChatTheme(
   ///       data: SfChatThemeData(
-  ///         incomingBubbleContentBackgroundColor: Colors.grey[300],
+  ///         incomingMessageBackgroundColor: Colors.grey[300],
   ///       ),
   ///       child: SfChat(),
   ///     ),
   ///   );
   /// }
   /// ```
-  final Color? incomingBubbleContentBackgroundColor;
+  final Color? incomingMessageBackgroundColor;
 
   /// Text style for the message editor.
   ///
@@ -566,6 +613,30 @@ class SfChatThemeData with Diagnosticable {
   /// ```
   final TextStyle? incomingSecondaryHeaderTextStyle;
 
+  /// Text style for the suggestion items.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         suggestionItemTextStyle:
+  ///             WidgetStateProperty.resolveWith<TextStyle>(
+  ///           (Set<WidgetState> states) {
+  ///             if (states.contains(WidgetState.hovered)) {
+  ///               return TextStyle(fontSize: 14.0, color: Colors.blue);
+  ///             }
+  ///             return TextStyle(fontSize: 15.0, color: Colors.green);
+  ///           },
+  ///         ),
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final WidgetStateProperty<TextStyle?>? suggestionItemTextStyle;
+
   /// Shape of the outgoing message bubble.
   ///
   /// ```dart
@@ -573,7 +644,7 @@ class SfChatThemeData with Diagnosticable {
   ///   return Scaffold(
   ///     body: SfChatTheme(
   ///       data: SfChatThemeData(
-  ///         outgoingBubbleContentShape: RoundedRectangleBorder(
+  ///         outgoingMessageShape: RoundedRectangleBorder(
   ///           borderRadius: BorderRadius.circular(12.0),
   ///         ),
   ///       ),
@@ -582,7 +653,7 @@ class SfChatThemeData with Diagnosticable {
   ///   );
   /// }
   /// ```
-  final ShapeBorder? outgoingBubbleContentShape;
+  final ShapeBorder? outgoingMessageShape;
 
   /// Shape of the incoming message bubble.
   ///
@@ -591,7 +662,7 @@ class SfChatThemeData with Diagnosticable {
   ///   return Scaffold(
   ///     body: SfChatTheme(
   ///       data: SfChatThemeData(
-  ///         incomingBubbleContentShape: RoundedRectangleBorder(
+  ///         incomingMessageShape: RoundedRectangleBorder(
   ///           borderRadius: BorderRadius.circular(12.0),
   ///         ),
   ///       ),
@@ -600,7 +671,96 @@ class SfChatThemeData with Diagnosticable {
   ///   );
   /// }
   /// ```
-  final ShapeBorder? incomingBubbleContentShape;
+  final ShapeBorder? incomingMessageShape;
+
+  /// Background color of the suggestion area.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         suggestionBackgroundColor: Colors.blue,
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final Color? suggestionBackgroundColor;
+
+  /// Shape of the suggestion area.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         suggestionBackgroundShape: RoundedRectangleBorder(
+  ///           borderRadius: BorderRadius.circular(8.0),
+  ///         ),
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final ShapeBorder? suggestionBackgroundShape;
+
+  /// Color of the suggestion item background, which can vary based on the
+  /// widget's state.
+  /// This uses a [WidgetStateProperty] to allow state-specific changes.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         suggestionItemBackgroundColor:
+  ///             WidgetStateProperty.resolveWith<Color>(
+  ///           (Set<WidgetState> states) {
+  ///             if (states.contains(WidgetState.hovered)) {
+  ///               return Colors.blueAccent;
+  ///             }
+  ///             return Colors.blue;
+  ///           },
+  ///         ),
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final WidgetStateProperty<Color?>? suggestionItemBackgroundColor;
+
+  /// Shape of the suggestion item, which can vary based on the widget's state.
+  /// This uses a [WidgetStateProperty] to allow state-specific changes.
+  ///
+  /// ```dart
+  /// Widget build(BuildContext context) {
+  ///   return Scaffold(
+  ///     body: SfChatTheme(
+  ///       data: SfChatThemeData(
+  ///         suggestionItemShape:
+  ///             WidgetStateProperty.resolveWith<ShapeBorder>(
+  ///           (Set<WidgetState> states) {
+  ///             if (states.contains(WidgetState.hovered)) {
+  ///               return RoundedRectangleBorder(
+  ///                 borderRadius: BorderRadius.circular(12.0),
+  ///               );
+  ///             }
+  ///             return RoundedRectangleBorder(
+  ///               borderRadius: BorderRadius.circular(8.0),
+  ///             );
+  ///           },
+  ///         ),
+  ///       ),
+  ///       child: SfChat(),
+  ///     ),
+  ///   );
+  /// }
+  /// ```
+  final WidgetStateProperty<ShapeBorder?>? suggestionItemShape;
 
   SfChatThemeData copyWith({
     Color? actionButtonForegroundColor,
@@ -617,8 +777,10 @@ class SfChatThemeData with Diagnosticable {
     double? actionButtonHighlightElevation,
     ShapeBorder? actionButtonShape,
     MouseCursor? actionButtonMouseCursor,
-    Color? outgoingBubbleContentBackgroundColor,
-    Color? incomingBubbleContentBackgroundColor,
+    Color? outgoingAvatarBackgroundColor,
+    Color? incomingAvatarBackgroundColor,
+    Color? outgoingMessageBackgroundColor,
+    Color? incomingMessageBackgroundColor,
     TextStyle? editorTextStyle,
     TextStyle? outgoingContentTextStyle,
     TextStyle? incomingContentTextStyle,
@@ -626,8 +788,13 @@ class SfChatThemeData with Diagnosticable {
     TextStyle? incomingPrimaryHeaderTextStyle,
     TextStyle? outgoingSecondaryHeaderTextStyle,
     TextStyle? incomingSecondaryHeaderTextStyle,
-    ShapeBorder? outgoingBubbleContentShape,
-    ShapeBorder? incomingBubbleContentShape,
+    WidgetStateProperty<TextStyle?>? suggestionItemTextStyle,
+    ShapeBorder? outgoingMessageShape,
+    ShapeBorder? incomingMessageShape,
+    Color? suggestionBackgroundColor,
+    ShapeBorder? suggestionBackgroundShape,
+    WidgetStateProperty<Color?>? suggestionItemBackgroundColor,
+    WidgetStateProperty<ShapeBorder?>? suggestionItemShape,
   }) {
     return SfChatThemeData.raw(
       actionButtonForegroundColor:
@@ -642,10 +809,10 @@ class SfChatThemeData with Diagnosticable {
           actionButtonSplashColor ?? this.actionButtonSplashColor,
       actionButtonDisabledForegroundColor:
           actionButtonDisabledForegroundColor ??
-              this.actionButtonDisabledForegroundColor,
+          this.actionButtonDisabledForegroundColor,
       actionButtonDisabledBackgroundColor:
           actionButtonDisabledBackgroundColor ??
-              this.actionButtonDisabledBackgroundColor,
+          this.actionButtonDisabledBackgroundColor,
       actionButtonElevation:
           actionButtonElevation ?? this.actionButtonElevation,
       actionButtonFocusElevation:
@@ -659,12 +826,14 @@ class SfChatThemeData with Diagnosticable {
       actionButtonShape: actionButtonShape ?? this.actionButtonShape,
       actionButtonMouseCursor:
           actionButtonMouseCursor ?? this.actionButtonMouseCursor,
-      outgoingBubbleContentBackgroundColor:
-          outgoingBubbleContentBackgroundColor ??
-              this.outgoingBubbleContentBackgroundColor,
-      incomingBubbleContentBackgroundColor:
-          incomingBubbleContentBackgroundColor ??
-              this.incomingBubbleContentBackgroundColor,
+      outgoingAvatarBackgroundColor:
+          outgoingAvatarBackgroundColor ?? this.outgoingAvatarBackgroundColor,
+      incomingAvatarBackgroundColor:
+          incomingAvatarBackgroundColor ?? this.incomingAvatarBackgroundColor,
+      outgoingMessageBackgroundColor:
+          outgoingMessageBackgroundColor ?? this.outgoingMessageBackgroundColor,
+      incomingMessageBackgroundColor:
+          incomingMessageBackgroundColor ?? this.incomingMessageBackgroundColor,
       editorTextStyle: editorTextStyle ?? this.editorTextStyle,
       outgoingContentTextStyle:
           outgoingContentTextStyle ?? this.outgoingContentTextStyle,
@@ -674,95 +843,197 @@ class SfChatThemeData with Diagnosticable {
           outgoingPrimaryHeaderTextStyle ?? this.outgoingPrimaryHeaderTextStyle,
       incomingPrimaryHeaderTextStyle:
           incomingPrimaryHeaderTextStyle ?? this.incomingPrimaryHeaderTextStyle,
-      outgoingSecondaryHeaderTextStyle: outgoingSecondaryHeaderTextStyle ??
+      outgoingSecondaryHeaderTextStyle:
+          outgoingSecondaryHeaderTextStyle ??
           this.outgoingSecondaryHeaderTextStyle,
-      incomingSecondaryHeaderTextStyle: incomingSecondaryHeaderTextStyle ??
+      incomingSecondaryHeaderTextStyle:
+          incomingSecondaryHeaderTextStyle ??
           this.incomingSecondaryHeaderTextStyle,
-      outgoingBubbleContentShape:
-          outgoingBubbleContentShape ?? this.outgoingBubbleContentShape,
-      incomingBubbleContentShape:
-          incomingBubbleContentShape ?? this.incomingBubbleContentShape,
+      suggestionItemTextStyle:
+          suggestionItemTextStyle ?? this.suggestionItemTextStyle,
+      outgoingMessageShape: outgoingMessageShape ?? this.outgoingMessageShape,
+      incomingMessageShape: incomingMessageShape ?? this.incomingMessageShape,
+      suggestionBackgroundColor:
+          suggestionBackgroundColor ?? this.suggestionBackgroundColor,
+      suggestionBackgroundShape:
+          suggestionBackgroundShape ?? this.suggestionBackgroundShape,
+      suggestionItemBackgroundColor:
+          suggestionItemBackgroundColor ?? this.suggestionItemBackgroundColor,
+      suggestionItemShape: suggestionItemShape ?? this.suggestionItemShape,
     );
   }
 
   static SfChatThemeData? lerp(
-      SfChatThemeData? a, SfChatThemeData? b, double t) {
+    SfChatThemeData? a,
+    SfChatThemeData? b,
+    double t,
+  ) {
     if (a == null && b == null) {
       return null;
     }
     return SfChatThemeData(
       actionButtonForegroundColor: Color.lerp(
-          a!.actionButtonForegroundColor, b!.actionButtonForegroundColor, t),
+        a!.actionButtonForegroundColor,
+        b!.actionButtonForegroundColor,
+        t,
+      ),
       actionButtonBackgroundColor: Color.lerp(
-          a.actionButtonBackgroundColor, b.actionButtonBackgroundColor, t),
-      actionButtonFocusColor:
-          Color.lerp(a.actionButtonFocusColor, b.actionButtonFocusColor, t),
-      actionButtonHoverColor:
-          Color.lerp(a.actionButtonHoverColor, b.actionButtonHoverColor, t),
-      actionButtonSplashColor:
-          Color.lerp(a.actionButtonSplashColor, b.actionButtonSplashColor, t),
+        a.actionButtonBackgroundColor,
+        b.actionButtonBackgroundColor,
+        t,
+      ),
+      actionButtonFocusColor: Color.lerp(
+        a.actionButtonFocusColor,
+        b.actionButtonFocusColor,
+        t,
+      ),
+      actionButtonHoverColor: Color.lerp(
+        a.actionButtonHoverColor,
+        b.actionButtonHoverColor,
+        t,
+      ),
+      actionButtonSplashColor: Color.lerp(
+        a.actionButtonSplashColor,
+        b.actionButtonSplashColor,
+        t,
+      ),
       actionButtonDisabledForegroundColor: Color.lerp(
-          a.actionButtonDisabledForegroundColor,
-          b.actionButtonDisabledForegroundColor,
-          t),
+        a.actionButtonDisabledForegroundColor,
+        b.actionButtonDisabledForegroundColor,
+        t,
+      ),
       actionButtonDisabledBackgroundColor: Color.lerp(
-          a.actionButtonDisabledBackgroundColor,
-          b.actionButtonDisabledBackgroundColor,
-          t),
+        a.actionButtonDisabledBackgroundColor,
+        b.actionButtonDisabledBackgroundColor,
+        t,
+      ),
       actionButtonElevation:
           lerpDouble(a.actionButtonElevation, b.actionButtonElevation, t) ??
-              0.0,
-      actionButtonFocusElevation: lerpDouble(
-              a.actionButtonFocusElevation, b.actionButtonFocusElevation, t) ??
           0.0,
-      actionButtonHoverElevation: lerpDouble(
-              a.actionButtonHoverElevation, b.actionButtonHoverElevation, t) ??
+      actionButtonFocusElevation:
+          lerpDouble(
+            a.actionButtonFocusElevation,
+            b.actionButtonFocusElevation,
+            t,
+          ) ??
           0.0,
-      actionButtonDisabledElevation: lerpDouble(a.actionButtonDisabledElevation,
-              b.actionButtonDisabledElevation, t) ??
+      actionButtonHoverElevation:
+          lerpDouble(
+            a.actionButtonHoverElevation,
+            b.actionButtonHoverElevation,
+            t,
+          ) ??
           0.0,
-      actionButtonHighlightElevation: lerpDouble(
-              a.actionButtonHighlightElevation,
-              b.actionButtonHighlightElevation,
-              t) ??
+      actionButtonDisabledElevation:
+          lerpDouble(
+            a.actionButtonDisabledElevation,
+            b.actionButtonDisabledElevation,
+            t,
+          ) ??
           0.0,
-      actionButtonShape:
-          ShapeBorder.lerp(a.actionButtonShape, b.actionButtonShape, t),
+      actionButtonHighlightElevation:
+          lerpDouble(
+            a.actionButtonHighlightElevation,
+            b.actionButtonHighlightElevation,
+            t,
+          ) ??
+          0.0,
+      actionButtonShape: ShapeBorder.lerp(
+        a.actionButtonShape,
+        b.actionButtonShape,
+        t,
+      ),
       actionButtonMouseCursor:
           t < 0.5 ? a.actionButtonMouseCursor : b.actionButtonMouseCursor,
-      outgoingBubbleContentBackgroundColor: Color.lerp(
-          a.outgoingBubbleContentBackgroundColor,
-          b.outgoingBubbleContentBackgroundColor,
-          t),
-      incomingBubbleContentBackgroundColor: Color.lerp(
-          a.incomingBubbleContentBackgroundColor,
-          b.incomingBubbleContentBackgroundColor,
-          t),
+      outgoingAvatarBackgroundColor: Color.lerp(
+        a.outgoingAvatarBackgroundColor,
+        b.outgoingAvatarBackgroundColor,
+        t,
+      ),
+      incomingAvatarBackgroundColor: Color.lerp(
+        a.incomingAvatarBackgroundColor,
+        b.incomingAvatarBackgroundColor,
+        t,
+      ),
+      outgoingMessageBackgroundColor: Color.lerp(
+        a.outgoingMessageBackgroundColor,
+        b.outgoingMessageBackgroundColor,
+        t,
+      ),
+      incomingMessageBackgroundColor: Color.lerp(
+        a.incomingMessageBackgroundColor,
+        b.incomingMessageBackgroundColor,
+        t,
+      ),
       editorTextStyle: TextStyle.lerp(a.editorTextStyle, b.editorTextStyle, t),
       outgoingContentTextStyle: TextStyle.lerp(
-          a.outgoingContentTextStyle, b.outgoingContentTextStyle, t),
+        a.outgoingContentTextStyle,
+        b.outgoingContentTextStyle,
+        t,
+      ),
       incomingContentTextStyle: TextStyle.lerp(
-          a.incomingContentTextStyle, b.incomingContentTextStyle, t),
+        a.incomingContentTextStyle,
+        b.incomingContentTextStyle,
+        t,
+      ),
       outgoingPrimaryHeaderTextStyle: TextStyle.lerp(
-          a.outgoingPrimaryHeaderTextStyle,
-          b.outgoingPrimaryHeaderTextStyle,
-          t),
+        a.outgoingPrimaryHeaderTextStyle,
+        b.outgoingPrimaryHeaderTextStyle,
+        t,
+      ),
       incomingPrimaryHeaderTextStyle: TextStyle.lerp(
-          a.incomingPrimaryHeaderTextStyle,
-          b.incomingPrimaryHeaderTextStyle,
-          t),
+        a.incomingPrimaryHeaderTextStyle,
+        b.incomingPrimaryHeaderTextStyle,
+        t,
+      ),
       outgoingSecondaryHeaderTextStyle: TextStyle.lerp(
-          a.outgoingSecondaryHeaderTextStyle,
-          b.outgoingSecondaryHeaderTextStyle,
-          t),
+        a.outgoingSecondaryHeaderTextStyle,
+        b.outgoingSecondaryHeaderTextStyle,
+        t,
+      ),
       incomingSecondaryHeaderTextStyle: TextStyle.lerp(
-          a.incomingSecondaryHeaderTextStyle,
-          b.incomingSecondaryHeaderTextStyle,
-          t),
-      outgoingBubbleContentShape: ShapeBorder.lerp(
-          a.outgoingBubbleContentShape, b.outgoingBubbleContentShape, t),
-      incomingBubbleContentShape: ShapeBorder.lerp(
-          a.incomingBubbleContentShape, b.incomingBubbleContentShape, t),
+        a.incomingSecondaryHeaderTextStyle,
+        b.incomingSecondaryHeaderTextStyle,
+        t,
+      ),
+      suggestionItemTextStyle: WidgetStateProperty.lerp<TextStyle?>(
+        a.suggestionItemTextStyle,
+        b.suggestionItemTextStyle,
+        t,
+        TextStyle.lerp,
+      ),
+      outgoingMessageShape: ShapeBorder.lerp(
+        a.outgoingMessageShape,
+        b.outgoingMessageShape,
+        t,
+      ),
+      incomingMessageShape: ShapeBorder.lerp(
+        a.incomingMessageShape,
+        b.incomingMessageShape,
+        t,
+      ),
+      suggestionBackgroundColor: Color.lerp(
+        a.suggestionBackgroundColor,
+        b.suggestionBackgroundColor,
+        t,
+      ),
+      suggestionBackgroundShape: ShapeBorder.lerp(
+        a.suggestionBackgroundShape,
+        b.suggestionBackgroundShape,
+        t,
+      ),
+      suggestionItemBackgroundColor: WidgetStateProperty.lerp<Color?>(
+        a.suggestionItemBackgroundColor,
+        b.suggestionItemBackgroundColor,
+        t,
+        Color.lerp,
+      ),
+      suggestionItemShape: WidgetStateProperty.lerp<ShapeBorder?>(
+        a.suggestionItemShape,
+        b.suggestionItemShape,
+        t,
+        ShapeBorder.lerp,
+      ),
     );
   }
 
@@ -794,10 +1065,12 @@ class SfChatThemeData with Diagnosticable {
             actionButtonHighlightElevation &&
         other.actionButtonShape == actionButtonShape &&
         other.actionButtonMouseCursor == actionButtonMouseCursor &&
-        other.outgoingBubbleContentBackgroundColor ==
-            outgoingBubbleContentBackgroundColor &&
-        other.incomingBubbleContentBackgroundColor ==
-            incomingBubbleContentBackgroundColor &&
+        other.outgoingAvatarBackgroundColor == outgoingAvatarBackgroundColor &&
+        other.incomingAvatarBackgroundColor == incomingAvatarBackgroundColor &&
+        other.outgoingMessageBackgroundColor ==
+            outgoingMessageBackgroundColor &&
+        other.incomingMessageBackgroundColor ==
+            incomingMessageBackgroundColor &&
         other.editorTextStyle == editorTextStyle &&
         other.outgoingContentTextStyle == outgoingContentTextStyle &&
         other.incomingContentTextStyle == incomingContentTextStyle &&
@@ -809,8 +1082,13 @@ class SfChatThemeData with Diagnosticable {
             outgoingSecondaryHeaderTextStyle &&
         other.incomingSecondaryHeaderTextStyle ==
             incomingSecondaryHeaderTextStyle &&
-        other.outgoingBubbleContentShape == outgoingBubbleContentShape &&
-        other.incomingBubbleContentShape == incomingBubbleContentShape;
+        other.suggestionItemTextStyle == suggestionItemTextStyle &&
+        other.outgoingMessageShape == outgoingMessageShape &&
+        other.incomingMessageShape == incomingMessageShape &&
+        other.suggestionBackgroundColor == suggestionBackgroundColor &&
+        other.suggestionBackgroundShape == suggestionBackgroundShape &&
+        other.suggestionItemBackgroundColor == suggestionItemBackgroundColor &&
+        other.suggestionItemShape == suggestionItemShape;
   }
 
   @override
@@ -830,8 +1108,10 @@ class SfChatThemeData with Diagnosticable {
       actionButtonHighlightElevation,
       actionButtonShape,
       actionButtonMouseCursor,
-      outgoingBubbleContentBackgroundColor,
-      incomingBubbleContentBackgroundColor,
+      outgoingAvatarBackgroundColor,
+      incomingAvatarBackgroundColor,
+      outgoingMessageBackgroundColor,
+      incomingMessageBackgroundColor,
       editorTextStyle,
       outgoingContentTextStyle,
       incomingContentTextStyle,
@@ -839,8 +1119,13 @@ class SfChatThemeData with Diagnosticable {
       incomingPrimaryHeaderTextStyle,
       outgoingSecondaryHeaderTextStyle,
       incomingSecondaryHeaderTextStyle,
-      outgoingBubbleContentShape,
-      incomingBubbleContentShape,
+      suggestionItemTextStyle,
+      outgoingMessageShape,
+      incomingMessageShape,
+      suggestionBackgroundColor,
+      suggestionBackgroundShape,
+      suggestionItemBackgroundColor,
+      suggestionItemShape,
     ];
     return Object.hashAll(values);
   }
@@ -949,16 +1234,30 @@ class SfChatThemeData with Diagnosticable {
     );
     properties.add(
       ColorProperty(
-        'outgoingBubbleContentBackgroundColor',
-        outgoingBubbleContentBackgroundColor,
-        defaultValue: defaultData.outgoingBubbleContentBackgroundColor,
+        'outgoingAvatarBackgroundColor',
+        outgoingAvatarBackgroundColor,
+        defaultValue: defaultData.outgoingAvatarBackgroundColor,
       ),
     );
     properties.add(
       ColorProperty(
-        'incomingBubbleContentBackgroundColor',
-        incomingBubbleContentBackgroundColor,
-        defaultValue: defaultData.incomingBubbleContentBackgroundColor,
+        'incomingAvatarBackgroundColor',
+        incomingAvatarBackgroundColor,
+        defaultValue: defaultData.incomingAvatarBackgroundColor,
+      ),
+    );
+    properties.add(
+      ColorProperty(
+        'outgoingMessageBackgroundColor',
+        outgoingMessageBackgroundColor,
+        defaultValue: defaultData.outgoingMessageBackgroundColor,
+      ),
+    );
+    properties.add(
+      ColorProperty(
+        'incomingMessageBackgroundColor',
+        incomingMessageBackgroundColor,
+        defaultValue: defaultData.incomingMessageBackgroundColor,
       ),
     );
     properties.add(
@@ -1012,17 +1311,52 @@ class SfChatThemeData with Diagnosticable {
       ),
     );
     properties.add(
-      DiagnosticsProperty<ShapeBorder>(
-        'outgoingBubbleContentShape',
-        outgoingBubbleContentShape,
-        defaultValue: defaultData.outgoingBubbleContentShape,
+      DiagnosticsProperty<WidgetStateProperty<TextStyle?>>(
+        'suggestionItemTextStyle',
+        suggestionItemTextStyle,
+        defaultValue: defaultData.suggestionItemTextStyle,
       ),
     );
     properties.add(
       DiagnosticsProperty<ShapeBorder>(
-        'incomingBubbleContentShape',
-        incomingBubbleContentShape,
-        defaultValue: defaultData.incomingBubbleContentShape,
+        'outgoingMessageShape',
+        outgoingMessageShape,
+        defaultValue: defaultData.outgoingMessageShape,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<ShapeBorder>(
+        'incomingMessageShape',
+        incomingMessageShape,
+        defaultValue: defaultData.incomingMessageShape,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<Color>(
+        'suggestionBackgroundColor',
+        suggestionBackgroundColor,
+        defaultValue: defaultData.suggestionBackgroundColor,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<ShapeBorder>(
+        'suggestionBackgroundShape',
+        suggestionBackgroundShape,
+        defaultValue: defaultData.suggestionBackgroundShape,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<WidgetStateProperty<Color?>>(
+        'suggestionItemBackgroundColor',
+        suggestionItemBackgroundColor,
+        defaultValue: defaultData.suggestionItemBackgroundColor,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<WidgetStateProperty<ShapeBorder?>>(
+        'suggestionItemShape',
+        suggestionItemShape,
+        defaultValue: defaultData.suggestionItemShape,
       ),
     );
   }
