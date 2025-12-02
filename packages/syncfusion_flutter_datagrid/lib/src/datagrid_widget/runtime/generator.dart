@@ -1152,15 +1152,21 @@ class RowGenerator {
             final DataRowBase? row = rows.firstWhereOrNull((DataRowBase row) =>
                 row is DataRow && row.rowType == RowType.dataRow);
 
+            final newDataGridRow =
+                grid_helper.getDataGridRow(dataGridConfiguration, index);
+            final newDataGridAdapter = grid_helper.getDataGridRowAdapter(
+                dataGridConfiguration, newDataGridRow);
+
             row!
-              ..key = row.key
+              // We should never reuse exising row.key, because existing row.dataGridRow might be
+              // created as a new row below, and that leads to DuplicatedKey exception. So keeping
+              // key in sync with DataGridAdapter.
+              ..key = newDataGridAdapter?.key
               ..rowIndex = index
               ..rowRegion = region
               ..rowData = displayElement
-              ..dataGridRow = displayElement ??
-                  grid_helper.getDataGridRow(dataGridConfiguration, index)
-              ..dataGridRowAdapter = grid_helper.getDataGridRowAdapter(
-                  dataGridConfiguration, row.dataGridRow!);
+              ..dataGridRow = displayElement ?? newDataGridRow
+              ..dataGridRowAdapter = newDataGridAdapter;
             assert(grid_helper.debugCheckTheLength(
                 dataGridConfiguration,
                 dataGridConfiguration.columns.length,
