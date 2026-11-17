@@ -122,7 +122,7 @@ class SyncfusionFlutterPdfViewerPlugin extends PdfViewerPlatform {
         Settings()
           ..canvasContext = canvas.context2D
           ..viewport = viewport
-          ..annotationMode = 0;
+          ..annotationMode = 1;
     await (page.render(renderSettings)).promise.toDart;
     return canvas.context2D
         .getImageData(0, 0, width.toInt(), height.toInt())
@@ -161,7 +161,7 @@ class SyncfusionFlutterPdfViewerPlugin extends PdfViewerPlatform {
         Settings()
           ..canvasContext = canvas.context2D
           ..viewport = viewport
-          ..annotationMode = 0;
+          ..annotationMode = 1;
     await (page.render(renderSettings)).promise.toDart;
     return canvas.context2D
         .getImageData(0, 0, fullWidth.toInt(), fullHeight.toInt())
